@@ -8,7 +8,7 @@ defmodule Remarksync.SlideshowChannelTest do
 
     {:ok, _, socket} =
       socket("user_id", %{some: :assign})
-      |> subscribe_and_join(SlideshowChannel, "slideshow:lobby")
+      |> subscribe_and_join(SlideshowChannel, "slideshow:lobby", %{"state" => "1"})
 
     {:ok, socket: socket}
   end
@@ -48,15 +48,8 @@ defmodule Remarksync.SlideshowChannelTest do
     assert result == %{state: "2"}
   end
 
-  # test "existing slideshow returns existing state" do
-  #   {:ok, result1, _socket} =
-  #     socket("user_id", %{some: :assign})
-  #     |> subscribe_and_join(SlideshowChannel, "slideshow:1", %{"state" => "1"})
-
-  #   {:ok, result2, _socket} =
-  #     socket("user_id", %{some: :wat})
-  #     |> subscribe_and_join(SlideshowChannel, "slideshow:1", %{"state" => "123"})
-
-  #   assert result2 == %{state: "1"}
-  # end
+  test "update broadcasts state change", %{socket: socket} do
+    push socket, "change", %{"state" => "123"}
+    assert_broadcast "changed", %{state: "123"}
+  end
 end

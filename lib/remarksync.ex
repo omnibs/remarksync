@@ -11,6 +11,7 @@ defmodule Remarksync do
       supervisor(Remarksync.Endpoint, []),
       # Here you could define other workers and supervisors as children
       # worker(Remarksync.Worker, [arg1, arg2, arg3]),
+      worker(Remarksync.Registry, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

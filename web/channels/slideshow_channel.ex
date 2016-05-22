@@ -3,12 +3,8 @@ defmodule Remarksync.SlideshowChannel do
 
   alias Remarksync.Registry, as: Registry
 
-  def join("slideshow:" <> id, payload, socket) do
-    if authorized?(payload) do
-      {:ok, get_or_create(id, payload), socket}
-    else
-      {:error, %{reason: "unauthorized"}}
-    end
+  def join("slideshow:" <> id, %{"state" => state}, socket) do
+    {:ok, get_or_create(id, state), socket}
   end
 
   # Channels can be used in a request/response fashion
@@ -24,6 +20,17 @@ defmodule Remarksync.SlideshowChannel do
     {:noreply, socket}
   end
 
+  def handle_in("change", %{"state" => state}, socket) do
+    "slideshow:" <> id = socket.topic
+    case Registry.update(%{id: id, state: state}) do
+      {:ok, new_state} ->
+        broadcast socket, "changed", %{state: new_state.state}
+        {:noreply, socket}
+      {:error, reason} ->
+        {:reply, {:error, %{reason: reason}}}
+    end
+  end
+
   # This is invoked every time a notification is being broadcast
   # to the client. The default implementation is just to push it
   # downstream but one could filter or change the event.
@@ -32,17 +39,9 @@ defmodule Remarksync.SlideshowChannel do
     {:noreply, socket}
   end
 
-  # Add authorization logic here as required.
-  defp authorized?(_payload) do
-    true
-  end
-
-  defp get_or_create(id, %{"state" => state}) do
+  defp get_or_create(id, state) do
     %{state: existing_state} = Registry.create(%{id: id, state: state})
     %{state: existing_state}
   end
 
-  defp get_or_create(_, %{}) do
-    %{}
-  end
 end
