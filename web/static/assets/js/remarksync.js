@@ -1151,7 +1151,7 @@ var StateSync = function () {
 	function StateSync() {
 		_classCallCheck(this, StateSync);
 
-		this.socket = new Socket("ws://julianobs.co/remarksync/socket", { params: { token: window.userToken } });
+		this.socket = new Socket("ws://calm-caverns-50885.herokuapp.com/socket", { params: { token: window.userToken } });
 		this.counter = 0;
 	}
 
