@@ -13,7 +13,7 @@ When a slideshow using Remarksync is opened it connects to the Channel, broadcas
 Add the Remarksync script to the HTML of your remark slideshow:
 
 ```html
-<script src="http://calm-caverns-50885.herokuapp.com/js/remarksync.js"></script>
+<script src="https://omnibs.github.io/remarksync/web/static/assets/js/remarksync.js"></script>
 ```
 
 That's it! 
