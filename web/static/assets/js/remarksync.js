@@ -1259,8 +1259,6 @@ var SlideSync = function () {
 
 		this.monkeyPatchReplaceState();
 
-		// Use it like this:
-		// let self = this;
 		window.addEventListener('replaceState', function (e) {
 			if (_this.fromStateSync) _this.fromStateSync = false;else stateSync.push(_this.page);
 		});
@@ -1269,11 +1267,11 @@ var SlideSync = function () {
 	_createClass(SlideSync, [{
 		key: 'setPage',
 		value: function setPage(p) {
-			//let hash = this.presenter ? '#p' + p : '#' + p;
-
-			this.fromStateSync = true;
-			this.slideshow.gotoSlide(p - 0);
-			//window.history.replaceState(undefined, undefined, hash);
+			p = parseInt(p);
+			if (this.slideshow.getCurrentSlideIndex() != p - 1) {
+				this.fromStateSync = true;
+				this.slideshow.gotoSlide(p);
+			}
 		}
 	}, {
 		key: 'monkeyPatchReplaceState',

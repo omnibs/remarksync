@@ -30,8 +30,6 @@ class SlideSync {
 
 		this.monkeyPatchReplaceState();
 
-		// Use it like this:
-		// let self = this;
 		window.addEventListener('replaceState', e => {
 			if (this.fromStateSync)
 				this.fromStateSync = false;
@@ -49,11 +47,11 @@ class SlideSync {
 	}
 
 	setPage(p){
-		//let hash = this.presenter ? '#p' + p : '#' + p;
-
-		this.fromStateSync = true;
-		this.slideshow.gotoSlide(p-0);
-		//window.history.replaceState(undefined, undefined, hash);
+		p = parseInt(p);
+		if (this.slideshow.getCurrentSlideIndex() != p-1){
+			this.fromStateSync = true;
+			this.slideshow.gotoSlide(p);
+		}
 	}
 
 	monkeyPatchReplaceState(){
