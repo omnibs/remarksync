@@ -3,8 +3,8 @@ defmodule Remarksync.SlideshowChannel do
 
   alias Remarksync.Registry, as: Registry
 
-  def join("slideshow:" <> id, %{"state" => state}, socket) do
-    {:ok, get_or_create(id, state), socket}
+  def join("slideshow:" <> id, %{"state" => state, "counter" => counter}, socket) do
+    {:ok, get_or_create(id, %{state: state, counter: counter}), socket}
   end
 
   # Channels can be used in a request/response fashion
@@ -20,11 +20,11 @@ defmodule Remarksync.SlideshowChannel do
     {:noreply, socket}
   end
 
-  def handle_in("change", %{"state" => state}, socket) do
+  def handle_in("change", %{"state" => state, "counter" => counter}, socket) do
     "slideshow:" <> id = socket.topic
-    case Registry.update(%{id: id, state: state}) do
+    case Registry.update(%{id: id, state: state, counter: counter}) do
       {:ok, new_state} ->
-        broadcast socket, "changed", %{state: new_state.state}
+        broadcast socket, "changed", %{state: new_state.state, counter: new_state.counter}
         {:noreply, socket}
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}}
@@ -39,9 +39,8 @@ defmodule Remarksync.SlideshowChannel do
     {:noreply, socket}
   end
 
-  defp get_or_create(id, state) do
-    %{state: existing_state} = Registry.create(%{id: id, state: state})
-    %{state: existing_state}
+  defp get_or_create(id, %{state: state, counter: counter}) do
+    %{state: _existing_state, counter: _existing_count} = Registry.create(%{id: id, state: state, counter: counter})
   end
 
 end

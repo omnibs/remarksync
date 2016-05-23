@@ -3,7 +3,7 @@ module.exports = {
     javascripts: {
       joinTo: {
         'vendor.js': /^(?!app)/,
-        'app.js': /^app/
+        '../../web/static/assets/js/remarksync.js': /^app/
       },
       order: {
         before: [/phoenix.js/, /socket.js/]

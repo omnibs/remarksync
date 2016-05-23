@@ -1160,26 +1160,31 @@ var StateSync = function () {
 		value: function start(state) {
 			var _this = this;
 
+			var self = this;
+
 			this.socket.connect();
 
-			this.channel = this.socket.channel("slideshow:" + this.id, { state: state });
+			this.channel = this.socket.channel("slideshow:" + this.id, { state: state, counter: this.counter });
 
 			this.channel.join().receive("ok", function (resp) {
 				console.log("Joined successfully", resp);
 
 				if (typeof _this.cb === "function") _this.cb(resp.state);
 
-				_this.counter = resp.counter;
-				_this.started = true;
+				self.counter = resp.counter;
+				self.started = true;
 			}).receive("error", function (resp) {
 				console.log("Unable to join", resp);
 			});
 			this.channel.on("changed", function (payload) {
 				console.log("changed: ", payload);
 
-				if (_this.started && _this.counter < payload.counter) {
-					_this.counter = payload.counter;
-					cb(state);
+				console.log("self.started", self.started);
+				console.log("self.counter", self.counter);
+				console.log("payload.counter", payload.counter);
+				if (self.started && self.counter < payload.counter) {
+					self.counter = payload.counter || 0;
+					_this.cb(payload.state);
 				} else {
 					console.log("ignored, it's ours");
 				}
@@ -1191,7 +1196,7 @@ var StateSync = function () {
 			if (!this.started) return;
 
 			this.counter++;
-			this.channel.push("change", { state: state });
+			this.channel.push("change", { state: state, counter: this.counter });
 		}
 	}, {
 		key: "listen",
@@ -1209,6 +1214,8 @@ var StateSync = function () {
 }();
 
 var stateSync = new StateSync();
+
+;'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -1239,26 +1246,34 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var SlideSync = function () {
 	function SlideSync(stateSync, slideshow) {
+		var _this = this;
+
 		_classCallCheck(this, SlideSync);
 
+		this.slideshow = slideshow;
+
 		stateSync.start(this.page);
-		stateSync.listen(this.setPage);
+		stateSync.listen(function (p) {
+			_this.setPage(p);
+		});
 
 		this.monkeyPatchReplaceState();
 
 		// Use it like this:
-		var self = this;
+		// let self = this;
 		window.addEventListener('replaceState', function (e) {
-			stateSync.push(self.page);
+			if (_this.fromStateSync) _this.fromStateSync = false;else stateSync.push(_this.page);
 		});
 	}
 
 	_createClass(SlideSync, [{
 		key: 'setPage',
 		value: function setPage(p) {
-			var hash = this.presenter ? '#p' + p : '#' + p;
+			//let hash = this.presenter ? '#p' + p : '#' + p;
 
-			window.history.replaceState(undefined, undefined, hash);
+			this.fromStateSync = true;
+			this.slideshow.gotoSlide(p - 0);
+			//window.history.replaceState(undefined, undefined, hash);
 		}
 	}, {
 		key: 'monkeyPatchReplaceState',
@@ -1291,5 +1306,3 @@ var SlideSync = function () {
 }();
 
 window.slidesync = new SlideSync(stateSync, window.slideshow);
-
-//# sourceMappingURL=app.js.map

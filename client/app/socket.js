@@ -127,14 +127,16 @@ let state = {state: null, count: 0};
 
 class StateSync {
 	constructor() {
-		this.socket = new Socket("http://localhost:4000/socket", {params: {token: window.userToken}});
+		this.socket = new Socket("ws://localhost:4000/socket", {params: {token: window.userToken}});
 		this.counter = 0;
 	}
 	
 	start(state) {
+		var self = this;
+
 		this.socket.connect()
 
-		this.channel = this.socket.channel("slideshow:" + this.id, {state: state});
+		this.channel = this.socket.channel("slideshow:" + this.id, {state: state, counter: this.counter});
 
 		this.channel.join()
 		  .receive("ok", resp => { 
@@ -143,16 +145,19 @@ class StateSync {
 		  	if (typeof this.cb === "function")
 		  		this.cb(resp.state);
 
-		  	this.counter = resp.counter;
-		  	this.started = true;
+			self.counter = resp.counter;
+		  	self.started = true;
 		  })
 		  .receive("error", resp => { console.log("Unable to join", resp) })
 		this.channel.on("changed", payload => {
 			console.log("changed: ", payload);
 
-			if (this.started && this.counter < payload.counter){
-				this.counter = payload.counter;
-				cb(state);
+			console.log("self.started",self.started);
+			console.log("self.counter", self.counter);
+			console.log("payload.counter", payload.counter);
+			if (self.started && self.counter < payload.counter){
+				self.counter = payload.counter || 0;
+				this.cb(payload.state);
 			}
 			else{
 				console.log("ignored, it's ours");
@@ -164,7 +169,7 @@ class StateSync {
 		if (!this.started) return;
 
 		this.counter++;
-		this.channel.push("change", {state: state});
+		this.channel.push("change", {state: state, counter: this.counter});
 	}
 
 	get id() {

@@ -23,15 +23,20 @@
 
 class SlideSync {
 	constructor(stateSync, slideshow){
-		stateSync.start(this.page)
-		stateSync.listen(this.setPage);
+		this.slideshow = slideshow;
+
+		stateSync.start(this.page);
+		stateSync.listen((p) => {this.setPage(p)});
 
 		this.monkeyPatchReplaceState();
 
 		// Use it like this:
-		let self = this;
-		window.addEventListener('replaceState', function(e) {
-		   stateSync.push(self.page);
+		// let self = this;
+		window.addEventListener('replaceState', e => {
+			if (this.fromStateSync)
+				this.fromStateSync = false;
+			else
+		    	stateSync.push(this.page);
 		});
 	}
 
@@ -44,9 +49,11 @@ class SlideSync {
 	}
 
 	setPage(p){
-		let hash = this.presenter ? '#p' + p : '#' + p;
+		//let hash = this.presenter ? '#p' + p : '#' + p;
 
-		window.history.replaceState(undefined, undefined, hash);
+		this.fromStateSync = true;
+		this.slideshow.gotoSlide(p-0);
+		//window.history.replaceState(undefined, undefined, hash);
 	}
 
 	monkeyPatchReplaceState(){
