@@ -12,7 +12,7 @@ When a slideshow using Remarksync is opened it connects to the Channel, broadcas
 
 Add the Remarksync script to the HTML of your remark slideshow:
 
-```
+```html
 <script src="http://calm-caverns-50885.herokuapp.com/js/remarksync.js"></script>
 ```
 
@@ -21,6 +21,8 @@ That's it!
 The source-code for the library and the Phoenix Website can be found in this repository.
 
 # How to run your own Remarksync:
+
+If you'd like to use Remarksync on a LAN without internet, you can run it yourself and point the [remarksync.js](https://github.com/omnibs/remarksync/blob/master/web/static/assets/js/remarksync.js) file to your own Phoenix server.
 
 To start your Phoenix app:
 
