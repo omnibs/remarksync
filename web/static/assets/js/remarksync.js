@@ -1151,7 +1151,7 @@ var StateSync = function () {
 	function StateSync() {
 		_classCallCheck(this, StateSync);
 
-		this.socket = new Socket("ws://calm-caverns-50885.herokuapp.com/socket", { params: { token: window.userToken } });
+		this.socket = new Socket("ws://localhost:4000/socket", { params: { token: window.userToken } });
 		this.counter = 0;
 	}
 
@@ -1206,7 +1206,7 @@ var StateSync = function () {
 	}, {
 		key: "id",
 		get: function get() {
-			murmurhash3_32_gc(window.location.toString().replace(/[\?#].*/, ''), 1);
+			return murmurhash3_32_gc(window.location.toString().replace(/[\?#].*/, ''), 1);
 		}
 	}]);
 

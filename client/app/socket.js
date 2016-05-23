@@ -173,7 +173,7 @@ class StateSync {
 	}
 
 	get id() {
-		murmurhash3_32_gc(window.location.toString().replace(/[\?#].*/,''), 1);
+		return murmurhash3_32_gc(window.location.toString().replace(/[\?#].*/,''), 1);
 	}
 
 	listen(cb) {
