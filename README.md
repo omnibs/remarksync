@@ -10,13 +10,19 @@ When a slideshow using Remarksync is opened it connects to the Channel, broadcas
 
 # How to use it
 
-Add the Remarksync script to the HTML of your remark slideshow:
+Add the Remarksync script to the HTML of your remark slideshow, right after initialization:
 
 ```html
-<script src="https://omnibs.github.io/remarksync/web/static/assets/js/remarksync.js"></script>
+<script src="https://gnab.github.io/remark/downloads/remark-latest.min.js"></script>
+<script>
+  var slideshow = remark.create({..});
+</script>
+<script src="http://calm-caverns-50885.herokuapp.com/js/remarksync.js"></script>
 ```
 
-That's it! 
+That's it!
+
+Right now Remarksync requires you to have your slideshow on `window.slideshow` as shown above. It's smelly but it works, I'll improve it eventually.
 
 The source-code for the library and the Phoenix Website can be found in this repository.
 
